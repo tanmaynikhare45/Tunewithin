@@ -1,0 +1,270 @@
+/* TuneWithin - Main Stylesheet */
+
+/* Custom Variables */
+:root {
+    --primary-color: #5271FF;
+    --secondary-color: #8EBBFF;
+    --neutral-color: #465866;
+    --light-color: #F0F5FF;
+    --dark-color: #2A2D34;
+    
+    /* Mood-specific colors */
+    --very-negative-color: #FF5252;
+    --negative-color: #FF9800;
+    --neutral-mood-color: #9E9E9E;
+    --positive-color: #4CAF50;
+    --very-positive-color: #2196F3;
+    
+    /* Theme adjustments */
+    --bs-body-bg: #121212;
+    --bs-body-color: #f8f9fa;
+}
+
+/* General styling */
+body {
+    font-family: 'Nunito', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    flex: 1;
+}
+
+/* Header styling */
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+}
+
+/* Custom Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 90px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background-color: rgba(25, 25, 25, 0.95) !important;
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 90px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    color: #ced4da;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--primary-color);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+
+.sidebar .nav-link .feather {
+    margin-right: 0.5rem;
+}
+
+main {
+    padding-top: 1.5rem;
+}
+
+/* Card styling */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(82, 113, 255, 0.25);
+}
+
+/* Diary page styling */
+.diary-options {
+    margin-bottom: 2rem;
+}
+
+.diary-entry {
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#recording-indicator {
+    display: none;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Dashboard styling */
+.chart-container {
+    height: 300px;
+    margin-bottom: 2rem;
+}
+
+.mood-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Spotify playlist container */
+.spotify-embed {
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.mood-playlist {
+    margin-top: 1.5rem;
+}
+
+/* Mood-specific styling */
+.mood-very-negative {
+    color: var(--very-negative-color);
+}
+
+.mood-negative {
+    color: var(--negative-color);
+}
+
+.mood-neutral {
+    color: var(--neutral-mood-color);
+}
+
+.mood-positive {
+    color: var(--positive-color);
+}
+
+.mood-very-positive {
+    color: var(--very-positive-color);
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding-top: 0;
+    }
+    
+    .sidebar-sticky {
+        height: auto;
+    }
+    
+    main {
+        margin-left: 0 !important;
+        padding-top: 1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+/* Animation for page transitions */
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Footer styling */
+footer {
+    background-color: rgba(25, 25, 25, 0.95);
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}

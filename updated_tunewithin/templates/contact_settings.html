@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block title %}Trusted Contacts | TuneWithin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Trusted Contacts</h1>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
+            <i class="fas fa-plus"></i> Add Contact
+        </button>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">About Trusted Contacts</h5>
+                </div>
+                <div class="card-body">
+                    <p>Trusted contacts are people you trust with information about your emotional wellbeing. You can choose to share your mood reports with them, which can be helpful if:</p>
+                    <ul>
+                        <li>You're working with a therapist or counselor</li>
+                        <li>You want support from close friends or family</li>
+                        <li>You're monitoring your emotional health for medical reasons</li>
+                    </ul>
+                    <p class="mb-0"><strong>Note:</strong> Your detailed diary entries are always kept private. Only summary data about your mood patterns will be shared with trusted contacts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Your Trusted Contacts</h5>
+                </div>
+                <div class="card-body">
+                    {% if contacts %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Relationship</th>
+                                        <th>Send Reports</th>
+                                        <th>Added</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in contacts %}
+                                        <tr>
+                                            <td>{{ contact.name }}</td>
+                                            <td>{{ contact.email }}</td>
+                                            <td>{{ contact.relationship or 'Not specified' }}</td>
+                                            <td>
+                                                {% if contact.send_reports %}
+                                                    <span class="badge bg-success">Enabled</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Disabled</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ contact.created_at.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editContactModal{{ contact.id }}">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <form method="POST" action="{{ url_for('send_report', contact_id=contact.id) }}" class="d-inline">
+                                                        {{ form.hidden_tag() }}
+                                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Send Report">
+                                                            <i class="fas fa-paper-plane"></i>
+                                                        </button>
+                                                    </form>
+                                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteContactModal{{ contact.id }}">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Edit Contact Modal -->
+                                                <div class="modal fade" id="editContactModal{{ contact.id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content bg-dark">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Edit Contact</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form method="POST" action="{{ url_for('contact_settings') }}">
+                                                                    {{ form.hidden_tag() }}
+                                                                    <input type="hidden" name="contact_id" value="{{ contact.id }}">
+                                                                    <div class="mb-3">
+                                                                        <label for="name{{ contact.id }}" class="form-label">Name</label>
+                                                                        <input type="text" class="form-control" id="name{{ contact.id }}" name="name" value="{{ contact.name }}" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="email{{ contact.id }}" class="form-label">Email</label>
+                                                                        <input type="email" class="form-control" id="email{{ contact.id }}" name="email" value="{{ contact.email }}" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="relationship{{ contact.id }}" class="form-label">Relationship</label>
+                                                                        <input type="text" class="form-control" id="relationship{{ contact.id }}" name="relationship" value="{{ contact.relationship or '' }}">
+                                                                    </div>
+                                                                    <div class="mb-3 form-check">
+                                                                        <input type="checkbox" class="form-check-input" id="send_reports{{ contact.id }}" name="send_reports" {% if contact.send_reports %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="send_reports{{ contact.id }}">Send Monthly Reports</label>
+                                                                    </div>
+                                                                    <div class="d-grid">
+                                                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Delete Contact Modal -->
+                                                <div class="modal fade" id="deleteContactModal{{ contact.id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content bg-dark">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Confirm Deletion</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Are you sure you want to remove <strong>{{ contact.name }}</strong> from your trusted contacts?</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <form method="POST" action="{{ url_for('delete_contact', contact_id=contact.id) }}">
+                                                                    {{ form.hidden_tag() }}
+                                                                    <button type="submit" class="btn btn-danger">Delete Contact</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="mb-3">You haven't added any trusted contacts yet.</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                                <i class="fas fa-plus me-2"></i>Add Your First Contact
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Trusted Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('contact_settings') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="relationship" class="form-label">Relationship</label>
+                        <input type="text" class="form-control" id="relationship" name="relationship" placeholder="Optional">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="send_reports" name="send_reports" checked>
+                        <label class="form-check-label" for="send_reports">Send Monthly Reports</label>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

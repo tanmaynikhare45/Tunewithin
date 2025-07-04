@@ -1,0 +1,284 @@
+/* TuneWithin - Main Stylesheet */
+
+:root {
+  --primary-color: #7b68ee;
+  --secondary-color: #6a5acd;
+  --accent-color: #9370db;
+  --dark-bg: #212529;
+  --darker-bg: #1a1d20;
+  --light-text: #f8f9fa;
+  --muted-text: #adb5bd;
+  --border-color: #343a40;
+  
+  /* Mood colors */
+  --very-negative-color: #FF5252;
+  --negative-color: #FF9800;
+  --neutral-color: #9E9E9E;
+  --positive-color: #4CAF50;
+  --very-positive-color: #2196F3;
+}
+
+/* Base styling */
+body {
+  padding-top: 56px;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--darker-bg);
+  color: var(--light-text);
+}
+
+.content-wrapper {
+  padding-top: 1.5rem;
+  min-height: calc(100vh - 56px - 100px);
+}
+
+/* Sidebar styling */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 56px 0 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 56px);
+  padding-top: 1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: var(--muted-text);
+}
+
+.sidebar .nav-link.active {
+  color: var(--primary-color);
+}
+
+/* Card styling */
+.card {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background-color: var(--dark-bg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Chart styling */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Mood indicator styling */
+.mood-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Playlist tabs */
+.tab-content {
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 1.25rem;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  color: var(--muted-text);
+  transition: all 0.2s;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--border-color) var(--border-color) transparent;
+  color: var(--light-text);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--accent-color);
+  background-color: var(--dark-bg);
+  border-color: var(--border-color) var(--border-color) var(--dark-bg);
+}
+
+/* Spotify embed */
+.spotify-embed {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.spotify-embed iframe {
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.spotify-embed iframe:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.spotify-embed::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(135deg, rgba(123, 104, 238, 0.3), rgba(0, 0, 0, 0));
+  border-radius: 16px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spotify-embed:hover::before {
+  opacity: 1;
+}
+
+.playlist-changed {
+  animation: playlist-pulse 0.8s ease;
+}
+
+@keyframes playlist-pulse {
+  0% { transform: scale(0.98); filter: brightness(0.8); }
+  50% { transform: scale(1.02); filter: brightness(1.2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Playlist info styling */
+.playlist-info {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.playlist-name {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Button styling */
+.btn-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline-primary:hover, .btn-outline-primary.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+/* Recent activity styling */
+.list-group-item {
+  transition: transform 0.15s ease-in-out;
+}
+
+.list-group-item:hover {
+  transform: translateX(5px);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn ease 1s;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Enhanced mood colors for charts */
+.mood-very-negative { background-color: var(--very-negative-color); }
+.mood-negative { background-color: var(--negative-color); }
+.mood-neutral { background-color: var(--neutral-color); }
+.mood-positive { background-color: var(--positive-color); }
+.mood-very-positive { background-color: var(--very-positive-color); }
+
+/* Recording elements */
+#recording-indicator {
+  display: none;
+}
+
+#recording-indicator.active {
+  display: block;
+  animation: pulse 1.5s infinite;
+}
+
+#stop-button {
+  display: none;
+}
+
+/* Footer */
+.footer {
+  padding: 1.5rem 0;
+  color: var(--muted-text);
+  background-color: var(--dark-bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: static;
+    height: auto;
+    padding-bottom: 1rem;
+  }
+  
+  .sidebar-sticky {
+    height: auto;
+    overflow-y: visible;
+  }
+  
+  body {
+    padding-top: 56px;
+  }
+  
+  .content-wrapper {
+    padding-top: 1rem;
+  }
+  
+  .chart-container {
+    height: 250px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .tab-content {
+    padding: 0.75rem;
+  }
+}

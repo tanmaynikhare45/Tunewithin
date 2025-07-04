@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+
+{% block title %}TuneWithin - Emotion-Aware Music Companion{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6 fade-in">
+            <h1 class="display-4 fw-bold mb-4">Navigate Your Emotions Through Music</h1>
+            <p class="lead mb-4">TuneWithin is your AI-powered wellness companion that helps you reflect on and navigate your emotions using the healing power of music.</p>
+            <div class="d-grid gap-2 d-md-flex">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('diary') }}" class="btn btn-primary btn-lg px-4 me-md-2">Start Journaling</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">View Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6 mt-5 mt-lg-0 text-center fade-in">
+            <img src="https://images.unsplash.com/photo-1471478331149-c72f17e33c73" alt="Music Therapy Concept" class="img-fluid rounded-3 shadow-lg" style="max-height: 500px; object-fit: cover;">
+        </div>
+    </div>
+    
+    <div class="row my-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4 fade-in">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-book fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="card-title h4">Express Yourself</h3>
+                    <p class="card-text">Share your thoughts and feelings through voice or text diaries. Let your emotions flow naturally.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4 fade-in">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-brain fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="card-title h4">AI Analysis</h3>
+                    <p class="card-text">Our AI detects your emotional state from your entries and tracks your mood patterns over time.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4 fade-in">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-music fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="card-title h4">Music Therapy</h3>
+                    <p class="card-text">Receive personalized music recommendations to validate your current feelings and guide you to a better emotional state.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row py-5 align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0 text-center fade-in">
+            <img src="https://images.unsplash.com/photo-1619431843897-4676bff0c286" alt="Emotion Visualization" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
+        </div>
+        <div class="col-lg-6 fade-in">
+            <h2 class="display-5 fw-bold mb-4">Visualize Your Emotional Journey</h2>
+            <p class="lead">Track your mood patterns over time with beautiful interactive charts. Gain insights into your emotional health and identify patterns that may affect your wellbeing.</p>
+            <ul class="list-unstyled mt-3">
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Daily mood tracking</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Weekly and monthly trends</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Emotion distribution analysis</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row py-5 align-items-center flex-md-row-reverse">
+        <div class="col-lg-6 mb-4 mb-lg-0 text-center fade-in">
+            <img src="https://images.unsplash.com/photo-1507120410856-1f35574c3b45" alt="Mood Journaling Interface" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
+        </div>
+        <div class="col-lg-6 fade-in">
+            <h2 class="display-5 fw-bold mb-4">Journal Your Way</h2>
+            <p class="lead">Choose how you want to express yourself. Type your thoughts or use voice recording to speak naturally about your day and feelings.</p>
+            <ul class="list-unstyled mt-3">
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Text-based journaling</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Voice recording and transcription</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Sentiment analysis of your entries</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row py-5 align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0 text-center fade-in">
+            <img src="https://images.unsplash.com/photo-1475275166152-f1e8005f9854" alt="Music Therapy" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
+        </div>
+        <div class="col-lg-6 fade-in">
+            <h2 class="display-5 fw-bold mb-4">Music That Moves You Forward</h2>
+            <p class="lead">Listen to curated playlists that not only match your current mood but help transition you to a more positive emotional state.</p>
+            <ul class="list-unstyled mt-3">
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Mood-based playlist recommendations</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Emotion transition through music</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> Spotify integration</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <h2 class="display-5 fw-bold mb-4">Ready to Start Your Emotional Journey?</h2>
+            <p class="lead mb-5">Join TuneWithin today and discover how music can help you navigate your emotional landscape.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('diary') }}" class="btn btn-primary btn-lg px-4 me-sm-3">Create Your First Entry</a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 me-sm-3">Sign Up Now</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

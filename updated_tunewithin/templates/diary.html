@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block title %}New Diary Entry | TuneWithin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">New Diary Entry</h1>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card bg-dark mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Express Yourself</h5>
+                </div>
+                <div class="card-body">
+                    <div class="diary-options mb-4">
+                        <ul class="nav nav-tabs" id="diaryTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-entry" type="button" role="tab" aria-controls="text-entry" aria-selected="true">
+                                    <i class="fas fa-keyboard me-2"></i>Text Entry
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="voice-tab" data-bs-toggle="tab" data-bs-target="#voice-entry" type="button" role="tab" aria-controls="voice-entry" aria-selected="false">
+                                    <i class="fas fa-microphone me-2"></i>Voice Entry
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3" id="diaryTabsContent">
+                            <!-- Text Entry Tab -->
+                            <div class="tab-pane fade show active" id="text-entry" role="tabpanel" aria-labelledby="text-tab">
+                                <p class="text-muted mb-3">Type your thoughts, feelings, or experiences. Your entry will be analyzed to determine your emotional state.</p>
+                                
+                                <form method="POST" action="{{ url_for('diary') }}">
+                                    {{ form.hidden_tag() }}
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="content" name="content" rows="10" placeholder="How are you feeling today?"></textarea>
+                                        <input type="hidden" id="entry-type" name="entry_type" value="text">
+                                    </div>
+                                    <div id="sentiment-display">
+                                        <!-- Sentiment analysis will be displayed here -->
+                                    </div>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Save Entry
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Voice Entry Tab -->
+                            <div class="tab-pane fade" id="voice-entry" role="tabpanel" aria-labelledby="voice-tab">
+                                <p class="text-muted mb-3">Record your voice to express yourself more naturally. Your voice will be transcribed and analyzed.</p>
+                                
+                                <div class="text-center mb-4">
+                                    <button id="record-button" class="btn btn-outline-danger btn-lg rounded-circle p-4">
+                                        <i class="fas fa-microphone fa-2x"></i>
+                                    </button>
+                                    <button id="stop-button" class="btn btn-outline-danger btn-lg rounded-circle p-4">
+                                        <i class="fas fa-stop fa-2x"></i>
+                                    </button>
+                                    <div id="recording-indicator" class="mt-2 text-danger">
+                                        <i class="fas fa-circle"></i> Recording...
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <audio id="audio-playback" controls class="w-100 d-none"></audio>
+                                </div>
+                                
+                                <div id="transcript-container" class="mb-3 d-none">
+                                    <h5>Transcript:</h5>
+                                    <div id="transcript-text" class="p-3 bg-dark border rounded"></div>
+                                </div>
+                                
+                                <div id="sentiment-display">
+                                    <!-- Sentiment analysis will be displayed here -->
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('diary') }}">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" id="content" name="content">
+                                    <input type="hidden" id="entry-type" name="entry_type" value="voice">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                        <button type="submit" class="btn btn-primary" id="save-voice-button" disabled>
+                                            <i class="fas fa-save me-2"></i>Save Entry
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card bg-dark mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Tips for Meaningful Entries</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-leaf text-success me-2"></i>Be Present</h6>
+                        <p class="text-muted small">Focus on how you feel right now. What emotions are you experiencing?</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-search text-primary me-2"></i>Be Specific</h6>
+                        <p class="text-muted small">Describe specific events or thoughts rather than generalizing.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-heartbeat text-danger me-2"></i>Be Honest</h6>
+                        <p class="text-muted small">This is your private space. The more honest you are, the better the analysis.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-brain text-info me-2"></i>Be Reflective</h6>
+                        <p class="text-muted small">Consider why you might be feeling a certain way. What triggered it?</p>
+                    </div>
+                    <div>
+                        <h6><i class="fas fa-clock text-warning me-2"></i>Be Regular</h6>
+                        <p class="text-muted small mb-0">Daily entries help establish patterns and track your emotional health over time.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card bg-dark">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">How It Works</h5>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">Your entry is analyzed using sentiment analysis to determine your emotional state.</li>
+                        <li class="mb-2">Based on your mood, TuneWithin recommends music playlists that match your current state.</li>
+                        <li class="mb-2">You'll also receive playlists designed to help transition your mood in a positive direction.</li>
+                        <li class="mb-2">Your entries contribute to your emotional health tracking, helping you visualize patterns over time.</li>
+                        <li>All data is private and secure, unless you choose to share reports with trusted contacts.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/diary.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard | TuneWithin{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- Add Chart.js and Chart.js Annotation plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+<script>
+    // Register the annotation plugin
+    Chart.register(ChartAnnotation);
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{{ url_for('diary') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus"></i> New Entry
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mood Data Attributes (hidden) -->
+    <div id="mood-data" 
+         data-dates="{{ dates }}" 
+         data-sentiment-scores="{{ sentiment_scores }}"
+         data-mood-counts="{{ mood_counts }}"
+         data-weekly-moods="{{ weekly_moods }}"
+         style="display: none;"></div>
+    
+    <!-- Mood Overview -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+            <div class="card bg-dark h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Current Mood</h5>
+                    {% if recent_entries %}
+                        {% set latest_entry = recent_entries[0] %}
+                        <div class="d-flex align-items-center mt-3">
+                            <div class="mood-indicator" style="background-color: {% if latest_entry.sentiment_label == 'very_negative' %}#FF5252
+         {% elif latest_entry.sentiment_label == 'negative' %}#FF9800
+         {% elif latest_entry.sentiment_label == 'neutral' %}#9E9E9E
+         {% elif latest_entry.sentiment_label == 'positive' %}#4CAF50
+         {% elif latest_entry.sentiment_label == 'very_positive' %}#2196F3
+         {% else %}#9E9E9E{% endif %}; width: 25px; height: 25px;"></div>
+                            <h3 class="ms-2 mb-0">
+                                {{ latest_entry.sentiment_label.replace('_', ' ').title() }}
+                            </h3>
+                        </div>
+                        <p class="text-muted mt-3">Based on your latest entry from {{ latest_entry.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="mb-0">No diary entries yet. <a href="{{ url_for('diary') }}">Create your first entry</a>.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+            <div class="card bg-dark h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Entry Statistics</h5>
+                    <div class="text-center py-3">
+                        <h2 class="display-4">{{ recent_entries|length }}</h2>
+                        <p class="text-muted">Recent Entries</p>
+                    </div>
+                    <div class="d-grid">
+                        <a href="{{ url_for('diary') }}" class="btn btn-outline-primary btn-sm">Add New Entry</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card bg-dark h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity</h5>
+                    {% if recent_entries %}
+                        <div class="list-group list-group-flush">
+                            {% for entry in recent_entries %}
+                                <div class="list-group-item bg-dark border-light-subtle">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <span class="mood-indicator" style="
+                                                background-color: 
+                                                {% if entry.sentiment_label == 'very_negative' %}#FF5252
+                                                {% elif entry.sentiment_label == 'negative' %}#FF9800
+                                                {% elif entry.sentiment_label == 'neutral' %}#9E9E9E
+                                                {% elif entry.sentiment_label == 'positive' %}#4CAF50
+                                                {% elif entry.sentiment_label == 'very_positive' %}#2196F3
+                                                {% else %}#9E9E9E{% endif %};">
+                                            </span>
+                                            {{ entry.sentiment_label.replace('_', ' ').title() }} Mood
+                                        </h6>
+                                        <small class="text-muted">{{ entry.created_at.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ entry.content[:100] + '...' if entry.content|length > 100 else entry.content }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas {{ 'fa-microphone' if entry.entry_type == 'voice' else 'fa-keyboard' }}"></i>
+                                        {{ entry.entry_type.title() }} Entry
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="mb-0">No diary entries yet. <a href="{{ url_for('diary') }}">Create your first entry</a>.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card bg-dark">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Mood Trend</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Last 30 Days
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="timeRangeDropdown">
+                            <li><a class="dropdown-item active" href="#">Last 30 Days</a></li>
+                            <li><a class="dropdown-item" href="#">Last 3 Months</a></li>
+                            <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
+                            <li><a class="dropdown-item" href="#">Last Year</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="mood-trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card bg-dark">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Mood Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="mood-distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Mood Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Weekly Mood Average</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="weekly-mood-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mood-Based Recommendations -->
+    {% if recent_entries %}
+        {% set latest_entry = recent_entries[0] %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Music Recommendations Based on Your Mood</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Based on your <strong>{{ latest_entry.sentiment_label.replace('_', ' ').title() }}</strong> mood, here are some playlists that might resonate with you:</p>
+                        
+                        <div class="mood-playlist">
+                            <!-- Playlist Tabs -->
+                            <ul class="nav nav-tabs" id="playlistTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active playlist-tab-button" id="current-tab" data-bs-toggle="tab" data-bs-target="#current-mood" type="button" role="tab" aria-controls="current-mood" aria-selected="true">
+                                        Current Mood
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link playlist-tab-button" id="transition-tab" data-bs-toggle="tab" data-bs-target="#transition-mood" type="button" role="tab" aria-controls="transition-mood" aria-selected="false">
+                                        Mood Transition
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <!-- Tab Content -->
+                            <div class="tab-content mt-3" id="playlistTabsContent">
+                                <!-- Current Mood Playlist -->
+                                <div class="tab-pane fade show active" id="current-mood" role="tabpanel" aria-labelledby="current-tab">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h4><span id="current-mood-label">{{ latest_entry.sentiment_label.replace('_', ' ').title() }}</span> Playlist</h4>
+                                            
+                                            {% set current_playlist_id = playlist_ids.get(latest_entry.sentiment_label, default_playlist) %}
+                                            {% set playlist_name = playlist_info.get(current_playlist_id, {}).get('name', 'Hindi-English Mix') %}
+                                            {% set playlist_description = playlist_info.get(current_playlist_id, {}).get('description', 'A curated blend of Hindi and English tracks') %}
+                                            
+                                            <p class="text-muted">
+                                                <strong>{{ playlist_name }}</strong> - {{ playlist_description }}
+                                            </p>
+                                            
+                                            <div class="spotify-embed">
+                                                <iframe style="border-radius:12px" 
+                                                    src="https://open.spotify.com/embed/playlist/{{ current_playlist_id }}"
+                                                    width="100%" height="352" frameBorder="0" allowfullscreen="" 
+                                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+                                                </iframe>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-dark mt-4 mt-md-0">
+                                                <div class="card-header">Why This Music?</div>
+                                                <div class="card-body">
+                                                    <p class="card-text">
+                                                        {% if latest_entry.sentiment_label == 'very_negative' %}
+                                                            This Hindi-English mixed playlist acknowledges your difficult emotions with emotional Bollywood ballads and mellow English tracks that validate your feelings.
+                                                        {% elif latest_entry.sentiment_label == 'negative' %}
+                                                            This thoughtful, melancholic Hindi-English mix offers gentle support with soothing Bollywood melodies and complementary English tracks.
+                                                        {% elif latest_entry.sentiment_label == 'neutral' %}
+                                                            A balanced Hindi-English playlist with calming tracks from both languages to maintain your stable emotional state while providing a peaceful background.
+                                                        {% elif latest_entry.sentiment_label == 'positive' %}
+                                                            Cheerful, optimistic Hindi-English tracks to celebrate and enhance your positive mindset with upbeat Bollywood hits and energetic English songs.
+                                                        {% elif latest_entry.sentiment_label == 'very_positive' %}
+                                                            Energetic, uplifting Bollywood party tracks and English dance hits to match and amplify your excellent mood - perfect for celebration!
+                                                        {% else %}
+                                                            A balanced Hindi-English playlist designed to complement your current emotional state with a blend of familiar tunes.
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mood Transition Playlist -->
+                                <div class="tab-pane fade" id="transition-mood" role="tabpanel" aria-labelledby="transition-tab">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h4>Mood Transition Journey</h4>
+                                            <p class="text-muted">Music to help shift your emotional state in a positive direction.</p>
+                                            
+                                            <div class="d-flex justify-content-center mb-3">
+                                                <div class="btn-group" role="group" aria-label="Mood direction">
+                                                    <button type="button" class="btn btn-outline-primary active" id="elevate-mood" onclick="changeMoodDirection('up')">
+                                                        <i class="fas fa-arrow-up"></i> Elevate Mood
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-primary" id="calm-mood" onclick="changeMoodDirection('down')">
+                                                        <i class="fas fa-arrow-down"></i> Calm Mood
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            {% set transition_playlist_id = transition_ids.get(latest_entry.sentiment_label, default_playlist) %}
+                                            {% set transition_name = playlist_info.get(transition_playlist_id, {}).get('name', 'Hindi-English Mix') %}
+                                            
+                                            <p class="small text-center mb-3 text-info">
+                                                <i class="fas fa-info-circle"></i> Currently playing: <strong>{{ transition_name }}</strong>
+                                            </p>
+                                            
+                                            <div class="spotify-embed" id="transition-playlist-container">
+                                                <iframe style="border-radius:12px" 
+                                                    src="https://open.spotify.com/embed/playlist/{{ transition_playlist_id }}"
+                                                    width="100%" height="352" frameBorder="0" allowfullscreen="" 
+                                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+                                                </iframe>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-dark mt-4 mt-md-0">
+                                                <div class="card-header">About Mood Transitions</div>
+                                                <div class="card-body">
+                                                    <p class="card-text">
+                                                        Music has the power to gradually shift our emotional state. This Hindi-English mixed playlist is designed to gently guide you from your current mood to a more positive or calm state, depending on what you need.
+                                                    </p>
+                                                    <p class="card-text">
+                                                        For effective mood transition:
+                                                    </p>
+                                                    <ul>
+                                                        <li>Listen to the full sequence</li>
+                                                        <li>Practice mindful listening</li>
+                                                        <li>Try deep breathing while listening</li>
+                                                        <li>Enjoy both Hindi and English songs for a culturally rich experience</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Toast notification container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <!-- Toasts will be added here dynamically -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js is already included in the head section -->
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/spotify.js') }}"></script>
+{% endblock %}
