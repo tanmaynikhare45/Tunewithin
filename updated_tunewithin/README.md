@@ -39,7 +39,7 @@ TuneWithin uses curated Hindi-English mixed playlists from Spotify. These playli
 
 ## Technology Stack
 
-- Flask (Python web framework)
+- Flask (Python is for web framework)
 - SQLite database
 - TextBlob for sentiment analysis
 - Chart.js for data visualization
