@@ -12,3 +12,4 @@ keras
 scikit-learn
 textblob
 spotipy
+tensorflow
