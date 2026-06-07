@@ -13,3 +13,4 @@ scikit-learn
 textblob
 spotipy
 tensorflow-cpu==2.13.0
+gunicorn
