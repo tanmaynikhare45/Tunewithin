@@ -14,3 +14,4 @@ textblob
 spotipy
 tensorflow-cpu==2.13.0
 gunicorn
+email_validator
