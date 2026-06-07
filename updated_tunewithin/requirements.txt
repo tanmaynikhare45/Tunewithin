@@ -1,0 +1,14 @@
+Flask
+Flask-Login
+Flask-WTF
+Flask-SQLAlchemy
+python-dotenv
+SQLAlchemy
+Werkzeug
+WTForms
+schedule
+numpy
+keras
+scikit-learn
+textblob
+spotipy
